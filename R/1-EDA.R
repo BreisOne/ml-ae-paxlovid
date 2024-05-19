@@ -1,4 +1,4 @@
-libraries <- c('xgboost','boot','randomForest','car','kableExtra','pROC','caret','glmnet','ggcorrplot','reshape2','cowplot','tidyverse','scales','ggrepel', 'ggpubr','rstatix')
+libraries <- c('kableExtra','reshape2','cowplot','tidyverse','scales','ggrepel', 'ggpubr','rstatix', 'ggplot2')
 lapply(libraries,library, character.only = TRUE)
 
 ###### Functions #####
@@ -50,7 +50,7 @@ penetrance_symptons_COM <- function(update8forR){
   penetrance
 }
 
-#### Análisis ####
+#### Data preprocessing ####
 
 paxlovid_dataset <- read.delim("./data/paxlovid_dataset.txt", stringsAsFactors=TRUE)
 
@@ -76,10 +76,10 @@ paxlovid_dataset$PM[paxlovid_dataset$PM == 2] <-0
 paxlovid_dataset$PM[paxlovid_dataset$PM == 3] <-1
 paxlovid_dataset$PM[paxlovid_dataset$PM == 4] <-0
 
-
-
 paxlovid_df <- paxlovid_dataset
 # [paxlovid_dataset$EA_IND !=0,]
+
+#### Initial exploratory data analysis  ####
 
 COM_EA_COR_plot <- ggplot(paxlovid_df, aes(COM_IND, EA_IND))+
                           geom_jitter()+
@@ -106,13 +106,13 @@ barplot(prevalence_symptons_EA$Percent, ylim = c(0,100),
 dev.off()
 
 EA_AGE_plot <- ggplot(paxlovid_df, aes(AGE_INT, EA_IND))+
-                    ggtitle("Efectos adversos por grupos de edad")+
-                    geom_boxplot(aes(fill = AGE_INT,  alpha = 0.5), outlier.shape = NA)+
-                    geom_jitter(aes(colour = AGE_INT))+
-                    scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
-                    stat_compare_means()+
-                    theme_bw()+
-                    theme(legend.position = "none")
+                      ggtitle("Efectos adversos por grupos de edad")+
+                      geom_boxplot(aes(fill = AGE_INT,  alpha = 0.5), outlier.shape = NA)+
+                      geom_jitter(aes(colour = AGE_INT))+
+                      scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
+                      stat_compare_means()+
+                      theme_bw()+
+                      theme(legend.position = "none")
 EA_AGE_plot
 
 png(file=paste0("./figures/","EA_AGE_plot.png"), width=6, height=6, units = "in", res = 300)
@@ -120,13 +120,13 @@ EA_AGE_plot
 dev.off()
 
 EA_SEX_plot <- ggplot(paxlovid_df, aes(SEX, EA_IND))+
-                  ggtitle("Efectos adversos por sexos")+
-                  geom_boxplot(aes(fill = SEX, alpha = 0.5), outlier.shape = NA)+
-                  geom_jitter(aes(colour = SEX))+
-                  scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
-                  stat_compare_means()+
-                  theme_bw()+
-                  theme(legend.position = "none")
+                      ggtitle("Efectos adversos por sexos")+
+                      geom_boxplot(aes(fill = SEX, alpha = 0.5), outlier.shape = NA)+
+                      geom_jitter(aes(colour = SEX))+
+                      scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
+                      stat_compare_means()+
+                      theme_bw()+
+                      theme(legend.position = "none")
 EA_SEX_plot
 
 png(file=paste0("./figures/","EA_SEX_plot.png"), width=6, height=6, units = "in", res = 300)
@@ -216,24 +216,24 @@ kable(stat.test, format = "html") %>%
   kable_styling(full_width = F, font_size = 9,bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 phenotypes_by_group_qvalues_plot<- ggplot(Phenotypes_groups_qvalues, aes(x = group, y = Penetrance))+
-  geom_bar(data = Phenotypes_groups, aes(fill = group), stat = "identity")+
-  geom_jitter(position = position_jitter(0.1))+
-  geom_errorbar(data = df.summary, aes(ymin = Penetrance-sd, ymax = Penetrance+sd), width = 0.5)+
-  facet_grid(cols = vars(Symptom))+
-  scale_y_continuous(breaks=seq(0,120,20), limits = c(0,120))+
-  scale_x_discrete()+
-  scale_fill_brewer(palette = "Set2")+
-  labs(title = "Prevalencia por EA en cada sexo",
-       x="Pacientes n = 113",
-       y="Prevalencia del AE(%)")+
-  theme_bw()+
-  theme(legend.position = "none")+
-  stat_pvalue_manual(
-    stat.test,
-    y.position = 75,
-    step.increase = 0.12,
-    hide.ns = TRUE,
-    label = "p.adj")# Add adj.p-value
+                                          geom_bar(data = Phenotypes_groups, aes(fill = group), stat = "identity")+
+                                          geom_jitter(position = position_jitter(0.1))+
+                                          geom_errorbar(data = df.summary, aes(ymin = Penetrance-sd, ymax = Penetrance+sd), width = 0.5)+
+                                          facet_grid(cols = vars(Symptom))+
+                                          scale_y_continuous(breaks=seq(0,50,20), limits = c(0,50))+
+                                          scale_x_discrete()+
+                                          scale_fill_brewer(palette = "Set2")+
+                                          labs(title = "Prevalencia por EA en cada sexo",
+                                               x="Pacientes n = 113",
+                                               y="Prevalencia del AE(%)")+
+                                          theme_bw()+
+                                          theme(legend.position = "none")+
+                                          stat_pvalue_manual(
+                                            stat.test,
+                                            y.position = 75,
+                                            step.increase = 0.12,
+                                            hide.ns = TRUE,
+                                            label = "p.adj")# Add adj.p-value
 
 phenotypes_by_group_qvalues_plot
 
@@ -253,13 +253,13 @@ barplot(prevalence_symptons_COM$Percent, ylim = c(0,100),
 dev.off()
 
 COM_AGE_plot <- ggplot(paxlovid_df, aes(AGE_INT, COM_IND))+
-                      ggtitle("Co-morbilidades por grupos de edad")+
-                      geom_boxplot(aes(fill = AGE_INT, alpha = 0.5), outlier.shape = NA)+
-                      geom_jitter(aes(colour = AGE_INT))+
-                      scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
-                      stat_compare_means()+
-                      theme_bw()+
-                      theme(legend.position = "none")
+                        ggtitle("Co-morbilidades por grupos de edad")+
+                        geom_boxplot(aes(fill = AGE_INT, alpha = 0.5), outlier.shape = NA)+
+                        geom_jitter(aes(colour = AGE_INT))+
+                        scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
+                        stat_compare_means()+
+                        theme_bw()+
+                        theme(legend.position = "none")
 
 COM_AGE_plot
 
@@ -268,13 +268,13 @@ COM_AGE_plot
 dev.off()
 
 COM_SEX_plot <-ggplot(paxlovid_df, aes(SEX, COM_IND))+
-                  ggtitle("Co-morbilidades por sexos")+
-                  geom_boxplot(aes(fill = SEX, alpha = 0.5), outlier.shape = NA)+
-                  geom_jitter(aes(colour = SEX))+
-                  scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
-                  stat_compare_means()+
-                  theme_bw()+
-                  theme(legend.position = "none")
+                      ggtitle("Co-morbilidades por sexos")+
+                      geom_boxplot(aes(fill = SEX, alpha = 0.5), outlier.shape = NA)+
+                      geom_jitter(aes(colour = SEX))+
+                      scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
+                      stat_compare_means()+
+                      theme_bw()+
+                      theme(legend.position = "none")
 
 COM_SEX_plot
 
@@ -308,7 +308,7 @@ Phenotypes_groups <- data.frame( "Penetrance"=c( phenotype_analysis(group_F$HRT_
                                                  phenotype_analysis(group_M$DIG_COM)$percent,
                                                  phenotype_analysis(group_M$KID_COM)$percent,
                                                  phenotype_analysis(group_M$OTHER_COM)$percent),
-
+                                 
                                  
                                  "Symptom" =c(rep(c("HRT_COM","ONCO_COM","PUL_COM","AI_COM","T2DM_COM","NERV_COM","VIH_COM","LIV_COM","DIG_COM","KID_COM","OTHER_COM"),2)),
                                  
@@ -390,7 +390,7 @@ phenotypes_by_group_qvalues_plot<- ggplot(Phenotypes_groups_qvalues, aes(x = gro
                                           geom_jitter(position = position_jitter(0.1))+
                                           geom_errorbar(data = df.summary, aes(ymin = Penetrance-sd, ymax = Penetrance+sd), width = 0.5)+
                                           facet_grid(cols = vars(Symptom))+
-                                          scale_y_continuous(breaks=seq(0,120,20), limits = c(0,120))+
+                                          scale_y_continuous(breaks=seq(0,80,20), limits = c(0,80))+
                                           scale_x_discrete()+
                                           scale_fill_brewer(palette = "Set2")+
                                           labs(title = "Prevalencia por COM en cada sexo",
@@ -412,6 +412,7 @@ phenotypes_by_group_qvalues_plot
 dev.off()
 
 #### Correlaciones entre EA y co-morbilidades ####
+
 paxlovid_df <- paxlovid_dataset[,c(12:22)]
 
 paxlovid_df[is.na(paxlovid_df)]<- 0
@@ -432,267 +433,9 @@ p.mat <- cor_pmat(paxlovid_df)
 ggcorrplot(corr, hc.order =TRUE, type ="upper",
            method = "circle",p.mat = p.mat,lab =TRUE)
 
-### Lasso regression para predecir los efectos adversos nerviosos #####
-
-lasso_df <- paxlovid_dataset[,c(3,5,6,12:22,25,28,69)]
-lasso_df$SMOKER[lasso_df$SMOKER == 2] <- 0
-lasso_df[is.na(lasso_df)] <- 0
-lasso_df[,c(3:17)] <- data.frame(lapply(lasso_df[,c(3:17)],factor))
-
-# Dividir el conjunto de datos en entrenamiento y testeo
-set.seed(1234)
-index <- createDataPartition(lasso_df$EA_NER, p = 0.8, list = FALSE)
-train_data <- lasso_df[index, ]
-test_data <- lasso_df[-index, ]
-
-# Crear matriz de predictores y vector de respuesta
-predictors <- model.matrix(EA_NER ~ ., data = train_data)[, -1]
-response <- train_data$EA_NER
-
-# Encontrar el mejor modelo
-cv.fit <- cv.glmnet(predictors, response,nfolds = 50, family = "binomial", alpha = 1)
-best_lambda <- cv.fit$lambda.min
-best_model <- glmnet(predictors, response, family = "binomial", alpha = 1, lambda = best_lambda)
-
-# Hacer predicciones en el conjunto de testeo
-test_predictors <- model.matrix(EA_NER ~ ., data = test_data)[,-1]
-test_probs <- predict(best_model, test_predictors, type = "response")
-test_preds <- ifelse(test_probs > 0.5, 1, 0)
-
-# Crear objeto ROC e intervalo de confianza
-roc_obj <- roc(response = test_data$EA_NER, predictor = test_probs)
-roc_ci <- ci.se(roc_obj)
-dat.ci <- data.frame(x = as.numeric(rownames(roc_ci)),
-                     lower = roc_ci[, 1],
-                     upper = roc_ci[, 3])
-coords <- coords(roc_obj, x="best", input="threshold", ret=c("threshold", "specificity", "sensitivity"), best.method=c("youden"))
-auc <- round(auc(roc_obj),2)
-coeficients <- coef(best_model)
-
-coeficients
-
-# Graficar la curva ROC
-roc_curve_plot <-ggroc(roc_obj, colour = 'steelblue', size = 1,legacy.axes = TRUE)+
-                        ggtitle(paste0('Curva ROC ','(AUC = ', auc,')'))+
-                        geom_segment(aes(x = 1, xend = 0, y = 1, yend = 0), color = "grey", linetype = "dashed")+
-                        geom_ribbon(data = dat.ci, aes(x = 1-x, ymin = lower, ymax = upper), fill = "steelblue", alpha= 0.2)+
-                        geom_point(data = coords, aes(x = 1 - specificity, y = sensitivity), size = 2, shape = 21, fill = "black")+
-                        geom_text(data = coords, aes(x = round(1 - specificity,1), y = round(sensitivity,1), 
-                                                     label = c(paste0('(',round(specificity,2),', ', round(sensitivity,2),')'))))+
-                        xlab("1 - Especificidad")+
-                        ylab("Sensibilidad")+
-                        annotate("text", x = 0.75, y = 0.4,
-                                 label = paste0("Age: ", round(coeficients[2], 3)), color = "red") +
-                        annotate("text", x = 0.75, y = 0.35,
-                                 label = paste0("Hrt_com: ", round(coeficients[5], 3)), color = "blue") +
-                        annotate("text", x = 0.75, y = 0.3,
-                                 label = paste0("VIH_com: ", round(coeficients[11], 3)), color = "blue") +
-                        annotate("text", x = 0.75, y = 0.25,
-                                 label = paste0("Dig_com: ", round(coeficients[13], 3)), color = "blue") +
-                        annotate("text", x = 0.75, y = 0.20,
-                                 label = paste0("Other_com: ", round(coeficients[15], 3)), color = "blue")+
-                        annotate("text", x = 0.75, y = 0.15,
-                                 label = paste0("Immuno-comp: ", round(coeficients[16], 3)), color = "orange")+
-                        annotate("text", x = 0.75, y = 0.1,
-                                 label = paste0("ALT_level: ", round(coeficients[17], 3)), color = "orange")+
-                        theme_bw()
-
-roc_curve_plot
-png(file=paste0("./figures/","roc_curve_ls_ea_plot.png"), width=6, height=6, units = "in", res = 300)
-roc_curve_plot
-dev.off()
-
-# Obtener coeficientes del modelo
-coeficients <- coef(best_model)
-
-coeficients
-# Extraer variables importantes
-important_vars <- names(coeficients[-1,][coeficients[-1] != 0])
-
-####Modelo logisto con variables priorizadas despues de lasso####
-
-lr_df <- paxlovid_dataset[,c(3,12,18,20,22,25,28,69)]
-lr_df[is.na(lr_df)] <- 0
-lr_df[,c(2:8)] <- data.frame(lapply(lr_df[,c(2:8)],factor))
-
-# Dividir el conjunto de datos en entrenamiento y testeo
-set.seed(1234)
-index <- createDataPartition(lr_df$EA_NER, p = 0.8, list = FALSE)
-train_data <- lr_df[index, ]
-test_data <- lr_df[-index, ]
-
-# ajustar modelo de regresión logística con validación cruzada
-final_model <- train(EA_NER ~ ., data = train_data, 
-                     method = "glm",
-                     trControl = trainControl(method = "cv"),
-                     preProcess = c("center", "scale"),
-                     family = "binomial")
-
-# Realizar predicciones con el modelo final y los datos de prueba
-test_probs_raw <- predict(final_model, newdata = test_data, type = "raw")
-test_probs <- predict(final_model, newdata = test_data, type = "prob")
-
-# evaluar desempeño del modelo
-confusionMatrix(test_probs_raw, test_data$EA_NER)
-
-# Crear objeto ROC e intervalo de confianza
-roc_obj <- roc(response = test_data$EA_NER, predictor = test_probs[,2])
-roc_ci <- ci.se(roc_obj)
-dat.ci <- data.frame(x = as.numeric(rownames(roc_ci)),
-                     lower = roc_ci[, 1],
-                     upper = roc_ci[, 3])
-coords <- coords(roc_obj, x="best", input="threshold", ret=c("threshold", "specificity", "sensitivity"), best.method=c("youden"))
-auc <- round(auc(roc_obj),2)
-
-auc
-
-# Graficar la curva ROC
-roc_curve_plot <-ggroc(roc_obj, colour = 'steelblue', size = 1,legacy.axes = TRUE)+
-  ggtitle(paste0('Curva ROC ','(AUC = ', auc,')'))+
-  geom_segment(aes(x = 1, xend = 0, y = 1, yend = 0), color = "grey", linetype = "dashed")+
-  geom_ribbon(data = dat.ci, aes(x = 1-x, ymin = lower, ymax = upper), fill = "steelblue", alpha= 0.2)+
-  geom_point(data = coords, aes(x = 1 - specificity, y = sensitivity), size = 2, shape = 21, fill = "black")+
-  geom_text(data = coords, aes(x = round(1 - specificity,1), y = round(sensitivity,1), 
-                               label = c(paste0('(',round(specificity,2),', ', round(sensitivity,2),')'))))+
-  xlab("1 - Especificidad")+
-  ylab("Sensibilidad")+
-  theme_bw()
-
-roc_curve_plot
-png(file=paste0("./figures/","roc_curve_lr_plot.png"), width=6, height=6, units = "in", res = 300)
-roc_curve_plot
-dev.off()
-
-# Obtener coeficientes del modelo
-coeficients <- coef(best_model)
-
-coeficients
-# Extraer variables importantes
-important_vars <- names(coeficients[-1,][coeficients[-1] != 0])
-
-
-###Aplicar un random forest#####
-
-rf_df <- paxlovid_dataset[,c(5,6,12:22,25,28,69)]
-rf_df$SMOKER[rf_df$SMOKER == 2] <- 0
-rf_df[is.na(rf_df)] <- 0
-rf_df[,c(2:16)] <- data.frame(lapply(rf_df[,c(2:16)],factor))
-
-# Dividir el conjunto de datos en entrenamiento y testeo
-set.seed(1234)
-index <- createDataPartition(rf_df$EA_NER, p = 0.8, list = FALSE)
-train_data <- rf_df[index, ]
-test_data <- rf_df[-index, ]
-
-# Crear el modelo de Random Forest
-model_rf <- randomForest(EA_NER~., data = train_data, importance = TRUE, ntree = 10000)
-
-# Hacer predicciones con el modelo en el conjunto de testeo
-test_probs_bi <- predict(model_rf, newdata = test_data)
-test_probs <- predict(model_rf, newdata = test_data, type = "prob")[,2]
-
-# Calcular la precisión del modelo
-accuracy_rf <- mean(test_probs_bi == test_data$EA_NER)
-accuracy_rf
-
-data.frame(test_data$EA_NER, test_probs_bi, test_probs)
-
-# Crear objeto ROC e intervalo de confianza
-roc_obj <- roc(response = test_data$EA_NER, predictor = test_probs)
-roc_ci <- ci.se(roc_obj)
-dat.ci <- data.frame(x = as.numeric(rownames(roc_ci)),
-                     lower = roc_ci[, 1],
-                     upper = roc_ci[, 3])
-coords <- coords(roc_obj, x="best", input="threshold", ret=c("threshold", "specificity", "sensitivity"), best.method=c("youden"))
-auc <- round(auc(roc_obj),2)
-
-
-# Graficar la curva ROC
-roc_curve_plot <-ggroc(roc_obj, colour = 'steelblue', size = 1,legacy.axes = TRUE)+
-  ggtitle(paste0('Curva ROC ','(AUC = ', auc,')'))+
-  geom_segment(aes(x = 1, xend = 0, y = 1, yend = 0), color = "grey", linetype = "dashed")+
-  geom_ribbon(data = dat.ci, aes(x = 1-x, ymin = lower, ymax = upper), fill = "steelblue", alpha= 0.2)+
-  geom_point(data = coords, aes(x = 1 - specificity, y = sensitivity), size = 2, shape = 21, fill = "black")+
-  geom_text(data = coords, aes(x = round(1 - specificity,1), y = round(sensitivity,1), 
-                               label = c(paste0('(',round(specificity,2),', ', round(sensitivity,2),')'))))+
-  xlab("1 - Especificidad")+
-  ylab("Sensibilidad")+
-  theme_bw()
-
-roc_curve_plot
-png(file=paste0("./figures/","roc_curve_rf_plot.png"), width=6, height=6, units = "in", res = 300)
-roc_curve_plot
-dev.off()
-
-###Aplicar un XGboost#####
-
-xg_df <- paxlovid_dataset[,c(5,6,12:22,25,28,69)]
-xg_df$SMOKER[xg_df$SMOKER == 2] <- 0
-xg_df[is.na(xg_df)] <- 0
-xg_df$SEX <- ifelse( xg_df$SEX == "M", 1, 0)
-xg_df[,c(2:16)] <- data.frame(lapply(xg_df[,c(2:16)],factor))
-
-# Dividir el conjunto de datos en entrenamiento y testeo
-set.seed(1234)
-index <- createDataPartition(xg_df$EA_NER, p = 0.8, list = FALSE)
-train_data <- xg_df[index, ]
-test_data <- xg_df[-index, ]
-
-dtrain <- xgb.DMatrix(data = as.matrix(train_data[,-16]), 
-                      label = train_data$EA_NER)
-
-dtest <- xgb.DMatrix(data = as.matrix(test_data[,-16]), 
-                     label = test_data$EA_NER)
-
-# Paso 3: Especificar los hiperparámetros
-xgb_params <- list(objective = "binary:logistic",
-                   eval_metric = "auc",
-                   eta = 0.15,
-                   max_depth = 8,
-                   min_child_weight = 0.6,
-                   subsample = 0.7,
-                   colsample_bytree = 0.6,
-                   gamma = 1)
-
-# Paso 4: Entrenar el modelo
-xgb_model <- xgb.train(params = xgb_params, 
-                       data = dtrain, 
-                       nrounds = 1000)
-
-# Paso 5: Realizar predicciones con el modelo
-test_probs <- predict(xgb_model, dtest)
-
-# Paso 6: Evaluar el rendimiento del modelo
-# Crear objeto ROC e intervalo de confianza
-roc_obj <- roc(response = test_data$EA_NER, predictor = test_probs)
-roc_ci <- ci.se(roc_obj)
-dat.ci <- data.frame(x = as.numeric(rownames(roc_ci)),
-                     lower = roc_ci[, 1],
-                     upper = roc_ci[, 3])
-coords <- coords(roc_obj, x="best", input="threshold", ret=c("threshold", "specificity", "sensitivity"), best.method=c("youden"))
-auc <- round(auc(roc_obj),2)
-
-
-# Graficar la curva ROC
-roc_curve_plot <-ggroc(roc_obj, colour = 'steelblue', size = 1,legacy.axes = TRUE)+
-  ggtitle(paste0('Curva ROC ','(AUC = ', auc,')'))+
-  geom_segment(aes(x = 1, xend = 0, y = 1, yend = 0), color = "grey", linetype = "dashed")+
-  geom_ribbon(data = dat.ci, aes(x = 1-x, ymin = lower, ymax = upper), fill = "steelblue", alpha= 0.2)+
-  geom_point(data = coords, aes(x = 1 - specificity, y = sensitivity), size = 2, shape = 21, fill = "black")+
-  geom_text(data = coords, aes(x = round(1 - specificity,1), y = round(sensitivity,1), 
-                               label = c(paste0('(',round(specificity,2),', ', round(sensitivity,2),')'))))+
-  xlab("1 - Especificidad")+
-  ylab("Sensibilidad")+
-  theme_bw()
-
-roc_curve_plot
-png(file=paste0("./figures/","roc_curve_xgb_plot.png"), width=6, height=6, units = "in", res = 300)
-roc_curve_plot
-dev.off()
-
 ###Segundo análisis rechazados no rechazados paxlovid ######
 
-paxlovid_dataset2 <- read.delim("paxlovid_rechazados_no.txt", stringsAsFactors=TRUE)
+paxlovid_dataset2 <- read.delim("./data/paxlovid_rechazados_no.txt", stringsAsFactors=TRUE)
 
 paxlovid_dataset2$Resolución <- as.factor(paxlovid_dataset2$Resolución)
 paxlovid_dataset2$Sexo <- as.factor(paxlovid_dataset2$Sexo)
@@ -723,4 +466,3 @@ sex_dif_paxlovid2_plot
 png(file=paste0("./figures/","sex_dif_paxlovid2_plot.png"), width=8, height=8, units = "in", res = 300)
 sex_dif_paxlovid2_plot
 dev.off()
-
