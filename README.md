@@ -102,7 +102,7 @@ These indices are analyzed to understand their distribution across genders and d
 
 This analysis investigates whether the occurrence of nervous adverse effects can be predicted from the comorbidities that a patient has. The following algorithms are used:
 
-- ### Logistic Regression
+- ### Logistic Regression (lasso)
 ![roc_curve_ls](./figures/roc_curve_ls_ea_plot.png)
 - ### Random Forest
 ![roc_curve_rf](./figures/roc_curve_rf_plot.png)
