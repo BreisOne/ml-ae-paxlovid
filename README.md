@@ -44,9 +44,29 @@ The exploratory analysis focuses on:
 - Prevalence of different comorbidities present in the cohort
 ![prevalence_comorbilities](./figures/prevalence_symptons_COM.png)
 
+    #### Explanation Comorbidities
+    - **HRT**: Cardiac comorbidities
+    - **ONCO**: Oncological comorbidities
+    - **PUL**: Pulmonary comorbidities
+    - **AI**: Autoimmune comorbidities
+    - **T2DM**: Type 2 diabetes comorbidities
+    - **NERV**: Nervous system comorbidities
+    - **VIH**: HIV comorbidities
+    - **LIV**: Hepatic comorbidities
+    - **DIG**: Digestive comorbidities
+    - **KID**: Renal comorbidities
+    - **OTHER**: Other comorbidities
 
 - Adverse effects detected in each patient
 ![prevalence_adverse_effects](./figures/prevalence_symptons_EA.png)
+
+    #### Explanation of Abbreviations
+    - **HEP**: Hepatic adverse effects
+    - **NER**: Nervous adverse effects
+    - **REN**: Renal adverse effects
+    - **DIG**: Digestive adverse effects
+    - **HRT**: Cardiac adverse effects
+    - **OTHERS**: Other adverse effects
 
 ### 2. Calculation of Adverse Effect Index and Comorbidity Index
 
@@ -71,12 +91,12 @@ Both indices are discrete measures between 0 and 1, recorded as absence/presence
 These indices are analyzed to understand their distribution across genders and different age groups.
 
 <div align="center">
-    <img src="./figures/EA_SEX_plot.png" width="300px"/> 
-    <img src="./figures/COM_SEX_plot.png" width="300px"/>
+    <img src="./figures/EA_SEX_plot.png" width="412px"/> 
+    <img src="./figures/COM_SEX_plot.png" width="412px"/>
 </div>
 <div align="center">
-    <img src="./figures/EA_AGE_plot.png" width="300px"/> 
-    <img src="./figures/COM_AGE_plot.png" width="300px"/>
+    <img src="./figures/EA_AGE_plot.png" width="412px"/> 
+    <img src="./figures/COM_AGE_plot.png" width="412px"/>
 </div>
 
 ### 3. Prediction of Nervous Adverse Effect from Comorbidities

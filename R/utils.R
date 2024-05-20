@@ -17,11 +17,11 @@ penetrance_symptons_EA <- function(update8forR){
                                phenotype_analysis(update8forR$EA_REN)$percent,
                                phenotype_analysis(update8forR$EA_DIG)$percent,
                                phenotype_analysis(update8forR$EA_HRT)$percent,
-                               phenotype_analysis(update8forR$EA_OTHERS1)$percent
+                               phenotype_analysis(update8forR$EA_OTHERS)$percent
                                
   ))
   colnames(penetrance)<- "Percent"
-  rownames(penetrance)<- c("EA_HEP","EA_NER","EA_REN","EA_DIG","EA_HRT","EA_OTHERS1")
+  rownames(penetrance)<- c("HEP","NER","REN","DIG","HRT","OTHERS")
   penetrance <- penetrance %>% arrange(desc(penetrance$Percent))
   penetrance
 }
@@ -41,7 +41,7 @@ penetrance_symptons_COM <- function(update8forR){
                                
   ))
   colnames(penetrance)<- "Percent"
-  rownames(penetrance)<- c("HRT_COM","ONCO_COM","PUL_COM","AI_COM","T2DM_COM","NERV_COM","VIH_COM", "LIV_COM", "DIG_COM","KID_COM","OTHER_COM")
+  rownames(penetrance)<- c("HRT","ONCO","PUL","AI","T2DM","NERV","VIH", "LIV", "DIG","KID","OTHER")
   penetrance <- penetrance %>% arrange(desc(penetrance$Percent))
   penetrance
 }

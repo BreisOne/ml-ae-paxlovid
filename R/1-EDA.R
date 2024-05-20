@@ -1,4 +1,4 @@
-libraries <- c('kableExtra','reshape2','cowplot','tidyverse','scales','ggrepel', 'ggpubr','rstatix', 'ggplot2')
+libraries <- c('ggcorrplot','kableExtra','reshape2','cowplot','tidyverse','scales','ggrepel', 'ggpubr','rstatix', 'ggplot2')
 lapply(libraries,library, character.only = TRUE)
 
 ###### Functions #####
@@ -7,16 +7,18 @@ source("./R/utils.R")
 
 #### Load data ####
 
-paxlovid_dataset <- read.delim("./data/paxlovid_dataset_pre_proc.txt", stringsAsFactors=TRUE)
+paxlovid_df <- read.delim("./data/paxlovid_dataset_pre_proc.txt", stringsAsFactors=TRUE)
+paxlovid_df <- paxlovid_df[paxlovid_df$COM_IND > 0 & paxlovid_df$EA_IND > 0,]
 
 #### Initial exploratory data analysis  ####
 
 COM_EA_COR_plot <- ggplot(paxlovid_df, aes(COM_IND, EA_IND))+
-                          geom_jitter()+
+                          geom_jitter(width = 0.1)+
                           geom_smooth(method =lm)+
                           scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
                           stat_cor(method = "spearman")+
-                          ggtitle("Correlación entre indices de efectos adversos y comorbilidades")+
+                          ggtitle("Correlation between adverse effects and comorbidities rates")+
+                          labs(x = "Comorbidity Index", y = "Adverse Effect Index") +
                           theme_bw()+
                           theme(legend.position = "none")
 COM_EA_COR_plot
@@ -27,21 +29,22 @@ dev.off()
 
 prevalence_symptons_EA <- penetrance_symptons_EA(paxlovid_df)
 
-png(file=paste0("./figures/","prevalence_symptons_EA.png"), width=8, height=6,units = "in", res = 300)
+png(file=paste0("./figures/","prevalence_symptons_EA.png"), width=15, height=5,units = "in", res = 300)
 barplot(prevalence_symptons_EA$Percent, ylim = c(0,100), 
-        ylab = "Prevalencia de EA (%)",
+        ylab = "Prevalence of adverse effect (%)",
         las = 1, names.arg = rownames(prevalence_symptons_EA), 
-        main = "Prevalencia de EAs en la cohorte ")
+        main = "Prevalence of adverse events in the cohort ")
 
 dev.off()
 
 EA_AGE_plot <- ggplot(paxlovid_df, aes(AGE_INT, EA_IND))+
-                      ggtitle("Efectos adversos por grupos de edad")+
+                      ggtitle("Adverse effects by age groups")+
                       geom_boxplot(aes(fill = AGE_INT,  alpha = 0.5), outlier.shape = NA)+
                       geom_jitter(aes(colour = AGE_INT))+
                       scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
                       stat_compare_means()+
                       theme_bw()+
+                      labs(x = "Age group", y = "Adverse effect Index") +
                       theme(legend.position = "none")
 EA_AGE_plot
 
@@ -50,12 +53,13 @@ EA_AGE_plot
 dev.off()
 
 EA_SEX_plot <- ggplot(paxlovid_df, aes(SEX, EA_IND))+
-                      ggtitle("Efectos adversos por sexos")+
+                      ggtitle("Adverse effects by gender")+
                       geom_boxplot(aes(fill = SEX, alpha = 0.5), outlier.shape = NA)+
                       geom_jitter(aes(colour = SEX))+
                       scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
                       stat_compare_means()+
                       theme_bw()+
+                      labs(x = "Gender", y = "Adverse effect Index") +
                       theme(legend.position = "none")
 EA_SEX_plot
 
@@ -63,32 +67,32 @@ png(file=paste0("./figures/","EA_SEX_plot.png"), width=6, height=6, units = "in"
 EA_SEX_plot
 dev.off()
 
-#Penetrance of mains phenotypes features in sexgroups (F, M)
+#Prevalence of main adverse effects features in sexgroups (F, M)
 
 group_F <- paxlovid_df[paxlovid_df$SEX=="F",]
 group_M <- paxlovid_df[paxlovid_df$SEX=="M",]
 
-phenotypes <- c("EA_HEP","EA_NER","EA_REN","EA_DIG","EA_HRT","EA_OTHERS1")
+phenotypes <- c("EA_HEP","EA_NER","EA_REN","EA_DIG","EA_HRT","EA_OTHERS")
 
-Phenotypes_groups <- data.frame( "Penetrance"=c(phenotype_analysis(group_F$EA_HEP)$percent,
+Phenotypes_groups <- data.frame( "Prevalence"=c(phenotype_analysis(group_F$EA_HEP)$percent,
                                                 phenotype_analysis(group_F$EA_NER)$percent,
                                                 phenotype_analysis(group_F$EA_REN)$percent,
                                                 phenotype_analysis(group_F$EA_DIG)$percent,
                                                 phenotype_analysis(group_F$EA_HRT)$percent,
-                                                phenotype_analysis(group_F$EA_OTHERS1)$percent,
+                                                phenotype_analysis(group_F$EA_OTHERS)$percent,
                                                 phenotype_analysis(group_M$EA_HEP)$percent,
                                                 phenotype_analysis(group_M$EA_NER)$percent,
                                                 phenotype_analysis(group_M$EA_REN)$percent,
                                                 phenotype_analysis(group_M$EA_DIG)$percent,
                                                 phenotype_analysis(group_M$EA_HRT)$percent,
-                                                phenotype_analysis(group_M$EA_OTHERS1)$percent),
+                                                phenotype_analysis(group_M$EA_OTHERS)$percent),
                                  
-                                 "Symptom" =c(rep(c("EA_HEP","EA_NER","EA_REN","EA_DIG","EA_HRT","EA_OTHERS1"),2)),
+                                 "Symptom" =c(rep(c("EA_HEP","EA_NER","EA_REN","EA_DIG","EA_HRT","EA_OTHERS"),2)),
                                  
                                  "group" =as.factor(c(rep("F",6),rep("M",6)))
 ) 
 
-Phenotypes_groups$Symptom <- factor(Phenotypes_groups$Symptom, levels=c("EA_NER","EA_DIG","EA_OTHERS1","EA_HEP","EA_HRT","EA_REN"))
+Phenotypes_groups$Symptom <- factor(Phenotypes_groups$Symptom, levels=c("EA_NER","EA_DIG","EA_OTHERS","EA_HEP","EA_HRT","EA_REN"))
 
 
 #Plot penetrance of mains phenotypes features in sex groups (F,M) using beta-distributions
@@ -98,20 +102,20 @@ Phenotypes_groups_qvalues <- data.frame( "Penetrance"=c(unlist(phenotype_analysi
                                                         unlist(phenotype_analysis(group_F$EA_REN)[,5:7]),
                                                         unlist(phenotype_analysis(group_F$EA_DIG)[,5:7]),
                                                         unlist(phenotype_analysis(group_F$EA_HRT)[,5:7]),
-                                                        unlist(phenotype_analysis(group_F$EA_OTHERS1)[,5:7]),
+                                                        unlist(phenotype_analysis(group_F$EA_OTHERS)[,5:7]),
                                                         unlist(phenotype_analysis(group_M$EA_HEP)[,5:7]),
                                                         unlist(phenotype_analysis(group_M$EA_NER)[,5:7]),
                                                         unlist(phenotype_analysis(group_M$EA_REN)[,5:7]),
                                                         unlist(phenotype_analysis(group_M$EA_DIG)[,5:7]),
                                                         unlist(phenotype_analysis(group_M$EA_HRT)[,5:7]),
-                                                        unlist(phenotype_analysis(group_M$EA_OTHERS1)[,5:7])),
+                                                        unlist(phenotype_analysis(group_M$EA_OTHERS)[,5:7])),
                                          
-                                         "Symptom" =c(rep(c(rep("EA_HEP",3),rep("EA_NER",3),rep("EA_REN",3),rep("EA_DIG",3),rep("EA_HRT",3),rep("EA_OTHERS1",3)),2)),
+                                         "Symptom" =c(rep(c(rep("EA_HEP",3),rep("EA_NER",3),rep("EA_REN",3),rep("EA_DIG",3),rep("EA_HRT",3),rep("EA_OTHERS",3)),2)),
                                          
                                          "group" =as.factor(c(rep("F",18),rep("M",18)))
 ) 
 
-Phenotypes_groups_qvalues$Symptom <- factor(Phenotypes_groups_qvalues$Symptom, levels=c("EA_NER","EA_DIG","EA_OTHERS1","EA_HEP","EA_HRT","EA_REN"))
+Phenotypes_groups_qvalues$Symptom <- factor(Phenotypes_groups_qvalues$Symptom, levels=c("EA_NER","EA_DIG","EA_OTHERS","EA_HEP","EA_HRT","EA_REN"))
 
 df.summary <- Phenotypes_groups_qvalues %>%
   group_by(group, Symptom) %>%
@@ -140,7 +144,7 @@ for(i in c(68:73)){
 }
 
 stat.test <- as_tibble(df)
-stat.test$Symptom <- factor(stat.test$Symptom, levels=c("EA_NER","EA_DIG","EA_OTHERS1","EA_HEP","EA_HRT","EA_REN"))
+stat.test$Symptom <- factor(stat.test$Symptom, levels=c("EA_NER","EA_DIG","EA_OTHERS","EA_HEP","EA_HRT","EA_REN"))
 
 kable(stat.test, format = "html") %>%
   kable_styling(full_width = F, font_size = 9,bootstrap_options = c("striped", "hover", "condensed", "responsive"))
@@ -177,18 +181,19 @@ prevalence_symptons_COM <- penetrance_symptons_COM(paxlovid_df)
 
 png(file=paste0("./figures/","prevalence_symptons_COM.png"), width=15, height=5, units = "in", res = 300)
 barplot(prevalence_symptons_COM$Percent, ylim = c(0,100), 
-        ylab = "Prevalencia de la COM (%)", 
+        ylab = "Prevalence of comorbidity (%)", 
         las = 1, names.arg = rownames(prevalence_symptons_COM), 
-        main = "Prevalencia de cada COM en la cohorte")
+        main = "Prevalence of each comorbidity in the cohort")
 dev.off()
 
 COM_AGE_plot <- ggplot(paxlovid_df, aes(AGE_INT, COM_IND))+
-                        ggtitle("Co-morbilidades por grupos de edad")+
+                        ggtitle("Comorbidities by age group")+
                         geom_boxplot(aes(fill = AGE_INT, alpha = 0.5), outlier.shape = NA)+
                         geom_jitter(aes(colour = AGE_INT))+
                         scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
                         stat_compare_means()+
                         theme_bw()+
+                        labs(x = "Age group", y = "Comorbidity Index") +
                         theme(legend.position = "none")
 
 COM_AGE_plot
@@ -198,12 +203,13 @@ COM_AGE_plot
 dev.off()
 
 COM_SEX_plot <-ggplot(paxlovid_df, aes(SEX, COM_IND))+
-                      ggtitle("Co-morbilidades por sexos")+
+                      ggtitle("Comorbidities by gender")+
                       geom_boxplot(aes(fill = SEX, alpha = 0.5), outlier.shape = NA)+
                       geom_jitter(aes(colour = SEX))+
                       scale_y_continuous(limits = c(0, 1.2), oob = scales::squish)+
                       stat_compare_means()+
                       theme_bw()+
+                      labs(x = "Gender", y = "Comorbidity Index") +
                       theme(legend.position = "none")
 
 COM_SEX_plot
@@ -212,7 +218,7 @@ png(file=paste0("./figures/","COM_SEX_plot.png"), width=6, height=6, units = "in
 COM_SEX_plot
 dev.off()
 
-#Plot prevalence of mains co-morbilities features in sex groups (F,M) using beta-distributions
+#Plot prevalence of mains comorbilities features in sex groups (F,M) using beta-distributions
 
 phenotypes <- c("HRT_COM","ONCO_COM","PUL_COM","AI_COM","T2DM_COM","NERV_COM","VIH_COM","LIV_COM","DIG_COM","KID_COM","OTHER_COM")
 
@@ -341,7 +347,7 @@ png(file=paste0("./figures/","COM_by_group_qvalues_plot.png"), width=10, height=
 phenotypes_by_group_qvalues_plot
 dev.off()
 
-#### Correlaciones entre EA y co-morbilidades ####
+#### Correlaciones entre EA y comorbilidades ####
 
 paxlovid_df <- paxlovid_dataset[,c(12:22)]
 
