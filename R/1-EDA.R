@@ -33,7 +33,7 @@ png(file=paste0("./figures/","prevalence_symptons_EA.png"), width=15, height=5,u
 barplot(prevalence_symptons_EA$Percent, ylim = c(0,100), 
         ylab = "Prevalence of adverse effect (%)",
         las = 1, names.arg = rownames(prevalence_symptons_EA), 
-        main = "Prevalence of adverse events in the cohort ")
+        main = "Prevalence of each adverse effect in the cohort ")
 
 dev.off()
 

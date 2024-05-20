@@ -91,12 +91,12 @@ Both indices are discrete measures between 0 and 1, recorded as absence/presence
 These indices are analyzed to understand their distribution across genders and different age groups.
 
 <div align="center">
-    <img src="./figures/EA_SEX_plot.png" width="412px"/> 
-    <img src="./figures/COM_SEX_plot.png" width="412px"/>
+    <img src="./figures/EA_SEX_plot.png" width="300px"/> 
+    <img src="./figures/COM_SEX_plot.png" width="300px"/>
 </div>
 <div align="center">
-    <img src="./figures/EA_AGE_plot.png" width="412px"/> 
-    <img src="./figures/COM_AGE_plot.png" width="412px"/>
+    <img src="./figures/EA_AGE_plot.png" width="300px"/> 
+    <img src="./figures/COM_AGE_plot.png" width="300px"/>
 </div>
 
 ### 3. Prediction of Nervous Adverse Effect from Comorbidities
