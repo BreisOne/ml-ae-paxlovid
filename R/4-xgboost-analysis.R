@@ -55,14 +55,14 @@ auc <- round(auc(roc_obj),2)
 
 # Graficar la curva ROC
 roc_curve_plot <-ggroc(roc_obj, colour = 'steelblue', size = 1,legacy.axes = TRUE)+
-                        ggtitle(paste0('Curva ROC ','(AUC = ', auc,')'))+
+                        ggtitle(paste0('ROC curve ','(AUC = ', auc,')'))+
                         geom_segment(aes(x = 1, xend = 0, y = 1, yend = 0), color = "grey", linetype = "dashed")+
                         geom_ribbon(data = dat.ci, aes(x = 1-x, ymin = lower, ymax = upper), fill = "steelblue", alpha= 0.2)+
                         geom_point(data = coords, aes(x = 1 - specificity, y = sensitivity), size = 2, shape = 21, fill = "black")+
                         geom_text(data = coords, aes(x = round(1 - specificity,1), y = round(sensitivity,1), 
                                                      label = c(paste0('(',round(specificity,2),', ', round(sensitivity,2),')'))))+
-                        xlab("1 - Especificidad")+
-                        ylab("Sensibilidad")+
+                        xlab("1 - Specificity")+
+                        ylab("Sensitivity")+
                         theme_bw()
 
 roc_curve_plot

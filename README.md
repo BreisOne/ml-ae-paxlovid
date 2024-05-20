@@ -10,9 +10,8 @@ This repository contains the code and data for analyzing a cohort of patients ad
 - [Data](#data)
 - [Analysis](#analysis)
 - [Results](#results)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+- [Conclusion](#conclusion)
+- [Limitations](#limitations)
 
 ## Introduction
 
@@ -104,14 +103,20 @@ These indices are analyzed to understand their distribution across genders and d
 This analysis investigates whether the occurrence of nervous adverse effects can be predicted from the comorbidities that a patient has. The following algorithms are used:
 
 - ### Logistic Regression
-![roc_curve_lr](./figures/roc_curve_lr_plot.png)
+![roc_curve_ls](./figures/roc_curve_ls_ea_plot.png)
 - ### Random Forest
 ![roc_curve_rf](./figures/roc_curve_rf_plot.png)
 - ### XGBoost
 ![roc_curve_xgb](./figures/roc_curve_xgb_plot.png)
 
-## Results
-The results of the analyses, including detailed statistical outputs and model performance metrics, are documented in the `figures` directory.
+The logistic regression model with L1 regularisation (lasso) was shown to have the highest predictive power. However, the performance was very low in all of them. Although in the lasso model the 1-specificity (FPR) is not entirely bad, in skewed distributions and diagnostic models the sensitivity (TPR) should be prioritised. In this case the lasso model's ability to avoid false negatives is too low, bordering on the predictive ability of a random classifier.
+
+## Conclusion
+No statistically significant results were obtained in any of the analyses performed on this cohort. The adverse effects developed after paxlovid administration by the patients do not seem to be related to their previous comorbidities. For this reason, other factors not included in the study could be the cause of their occurrence.
+
+## Limitations
+
+The limited size of the cohort coupled with the heterogeneity of the cohort are the main limitations of the study. The lack of sufficiently large groups of similar age and with a more homogeneous clinical picture are some of the possible reasons why no significant differences were observed and the models showed poor accuracy in predicting which patients might or might not develop adverse effects of a nervous nature.
 
 ## License
 
